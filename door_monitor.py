@@ -1,8 +1,5 @@
 import cv2
-
 import time
-from datetime import datetime
-import calendar
 import math
 
 import json
@@ -14,10 +11,10 @@ from configuration import *
 from helpers import *
 
 #initialize
+api_key = ''
 visual_recognition = VisualRecognitionV3(
     version='2018-03-19',
-    #iam_apikey='3JFeQ9NxcJjESkniWwfQzMaKin3ff2hbmzfpze7YkdrT'
-    iam_apikey='Pk09CTZsWBG3FKzad6fCzGAKzUVFl9hFQDFLZUqO9C19'
+    iam_apikey=api_key
 )
 
 #set up firebase
@@ -73,6 +70,7 @@ def log_faces(faces, img):
     return ppl_num
 
 def resize(img):
+    #resize for fitbit screen
     ratio = 200 / img.shape[0]
     width = int(img.shape[1] * ratio) 
     height = int(img.shape[0] * ratio) 
@@ -84,11 +82,11 @@ def resize(img):
     return resized
 
 def parser(face):
+
+    #picks out useful information
     age_range = str(face['age']['min']) + "-" + str(face['age']['max']) 
     gender = face['gender']['gender']
-    #date = calendar.month_name[datetime.now().month][0:2] + ' ' + str(datetime.now().day)
     date = time.strftime("%b %d, %I:%M %p")
-    #time = str(datetime.now().hour) + ':' + str(datetime.now().minute)
 
     data = {"age_range" : age_range,
             "gender" : gender,
@@ -136,7 +134,7 @@ def main():
 
         #cv2.imshow("face_cam", img)
 
-        #checks for faces every second
+        #checks for faces every 5 seconds
         if time.time() - last_frame > 5:
             last_frame = time.time()
 
