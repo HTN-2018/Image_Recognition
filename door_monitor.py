@@ -86,26 +86,29 @@ def resize(img):
 def parser(face):
     age_range = str(face['age']['min']) + "-" + str(face['age']['max']) 
     gender = face['gender']['gender']
-    date = calendar.month_name[datetime.now().month] + ' ' + str(datetime.now().day)
-    time = str(datetime.now().hour) + ':' + str(datetime.now().minute)
+    #date = calendar.month_name[datetime.now().month][0:2] + ' ' + str(datetime.now().day)
+    date = time.strftime("%b %d, %I:%M %p")
+    #time = str(datetime.now().hour) + ':' + str(datetime.now().minute)
 
-    data = {"age-range" : age_range,
+    data = {"age_range" : age_range,
             "gender" : gender,
-            "time" : date + ', ' + time
+            "time" : date
             }
     return data
 
 def send_push(user, faces):
     #x = faces['images'][0]['faces'][i]['face_location']['left']
+    db.child("users").child("9DZklrkXnYYGhtjTgb57ViG68Vn1").remove()
 
     for i in faces['images'][0]['faces']:
         face_data = parser(i)
         metadata_store = db.child("users").child(user['localId']).push(face_data, user['idToken'])
 
 def upload_pics(ppl_num):
+
     for i in range(ppl_num):
         media_store = storage.child('images/' + user['localId'] + '/' +
-                str(time.time()) + '.jpg').put("face"+str(i)+".jpg", user['idToken'])
+                "face"+str(i)+ '.jpg').put("face"+str(i)+".jpg", user['idToken'])
 
 def face_search(img):
     cv2.imwrite("0.jpg", img)
@@ -125,13 +128,13 @@ def main():
     last_frame = 0
 
     #specifies where you are getting your video feed from
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(1)
     while(cap.isOpened()):
         
         #captures frame from video feed
         ret, img = cap.read()
 
-        cv2.imshow("face_cam", img)
+        #cv2.imshow("face_cam", img)
 
         #checks for faces every second
         if time.time() - last_frame > 5:
